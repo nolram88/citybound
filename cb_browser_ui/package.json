@@ -23,12 +23,10 @@
     "@types/gl-matrix": "^2.4.5",
     "@types/react-dom": "^16.9.6",
     "@types/stacktrace-js": "^2.0.3",
+    "deasync": "0.1.31",
     "less": "^3.8.1",
     "parcel-bundler": "^1.12.4",
     "typescript": "^3.8.3"
-  },
-  "overrides": {
-    "deasync": "0.1.31"
   },
   "less": {
     "javascriptEnabled": true

@@ -1,12 +1,12 @@
 use kay::World;
 use compact::CVec;
 use descartes::PointContainer;
-use land_use::zone_planning::{LotPrototype, LotOccupancy};
-use land_use::vacant_lots::VacantLotID;
-use land_use::buildings::BuildingID;
+use crate::land_use::zone_planning::{LotPrototype, LotOccupancy};
+use crate::land_use::vacant_lots::VacantLotID;
+use crate::land_use::buildings::BuildingID;
 use cb_planning::construction::ConstructableID;
 use cb_planning::PrototypeID;
-use planning::{CBConstructionID, CBPrototypeKind};
+use crate::planning::{CBConstructionID, CBPrototypeKind};
 
 impl LotPrototype {
     pub fn construct(

@@ -4,6 +4,7 @@
 use kay::{ActorSystem, TypedID, RawID, Fate, Actor, TraitIDFrom, ActorOrActorTrait};
 #[allow(unused_imports)]
 use super::*;
+use crate::units::Instant;
 
 #[derive(Serialize, Deserialize)] #[serde(transparent)]
 pub struct TimeUIID {
@@ -50,7 +51,12 @@ impl TypedID for TimeUIID {
 impl<Act: Actor + TimeUI> TraitIDFrom<Act> for TimeUIID {}
 
 impl TimeUIID {
-    pub fn on_time_info(self, current_instant: :: units :: Instant, speed: u16, world: &mut World) {
+    pub fn on_time_info(
+        self,
+        current_instant: Instant,
+        speed: u16,
+        world: &mut World,
+    ) {
         world.send(self.as_raw(), MSG_TimeUI_on_time_info(current_instant, speed));
     }
 
@@ -70,7 +76,7 @@ impl TimeUIID {
 }
 
 #[derive(Compact, Clone)] #[allow(non_camel_case_types)]
-struct MSG_TimeUI_on_time_info(pub :: units :: Instant, pub u16);
+struct MSG_TimeUI_on_time_info(pub Instant, pub u16);
 
 
 

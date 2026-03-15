@@ -1,7 +1,9 @@
-use kay::{World, ActorSystem, TypedID};
-use ::construction::ConstructionID;
-use ::{PlanHistory, PlanResult, Gesture, Project, GestureID, PrototypeID, VersionedGesture,
-PlanningLogic};
+use kay::{ActorSystem, TypedID, World};
+use crate::construction::ConstructionID;
+use crate::{
+    Gesture, GestureID, PlanHistory, PlanResult, PlanningLogic, Project, PrototypeID,
+    VersionedGesture,
+};
 use compact::{CVec, CHashMap};
 use cb_util::random::{Uuid, uuid};
 use cb_util::log::{error, info};

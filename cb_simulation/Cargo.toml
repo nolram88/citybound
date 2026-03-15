@@ -3,12 +3,13 @@ name = "cb_simulation"
 version = "0.3.0"
 authors = ["Anselm Eickhoff <anselm.eickhoff@gmail.com>"]
 license = "AGPL-3.0"
+edition = "2018"
 build = "./build.rs"
 
 [dependencies]
 ordered-float = "1.0.1"
 itertools = "0.7.8"
-rand = { version = "0.5", features = ["stdweb"] }
+rand = { version = "0.5" }
 # waiting for image dep to be optional on crates
 noise = { git = "https://github.com/Razaekel/noise-rs", rev="4606a00", default-features = false }
 fnv = "1.0.6"

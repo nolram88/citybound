@@ -1,7 +1,6 @@
 extern crate cb_simulation;
 use cb_simulation::kay::TypedID;
 
-#[macro_use]
 extern crate rust_embed_flag;
 
 extern crate ctrlc;

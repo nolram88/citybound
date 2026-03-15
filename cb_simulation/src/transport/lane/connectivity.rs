@@ -1,7 +1,7 @@
 use compact::CVec;
 use descartes::N;
 use super::{LaneID, SwitchLaneID};
-use transport::microtraffic::LaneLikeID;
+use crate::transport::microtraffic::LaneLikeID;
 
 #[derive(Compact, Clone)]
 pub struct ConnectivityInfo {

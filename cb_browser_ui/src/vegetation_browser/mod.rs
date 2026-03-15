@@ -1,11 +1,11 @@
 use kay::{World, ActorSystem, TypedID, RawID, External};
-use environment::vegetation::{PlantID, PlantPrototype, VegetationType};
-use environment::vegetation::ui::{VegetationUI, VegetationUIID};
-use browser_utils::to_js_mesh;
+use cb_simulation::environment::vegetation::{PlantID, PlantPrototype, VegetationType};
+use cb_simulation::environment::vegetation::ui::{VegetationUI, VegetationUIID};
+use crate::browser_utils::to_js_mesh;
 use descartes::{P2, LinePath, ClosedLinePath, PrimitiveArea};
 use michelangelo::{Sculpture, FlatSurface, Instance};
 use std::collections::HashMap;
-use browser_utils::{FrameListener, FrameListenerID, flatten_instances};
+use crate::browser_utils::{FrameListener, FrameListenerID, flatten_instances};
 
 #[derive(Compact, Clone)]
 pub struct BrowserVegetationUI {
@@ -154,7 +154,7 @@ impl FrameListener for BrowserVegetationUI {
         use ::stdweb::unstable::TryInto;
 
         let new_trunk_color_js: Vec<f64> = js! {
-            return require("../../../src/colors").default.trunks;
+            return window.cbColors.trunks;
         }
         .try_into()
         .unwrap();
@@ -171,7 +171,7 @@ impl FrameListener for BrowserVegetationUI {
         }
 
         let new_canopy_color_js: Vec<f64> = js! {
-            return require("../../../src/colors").default.canopies;
+            return window.cbColors.canopies;
         }
         .try_into()
         .unwrap();

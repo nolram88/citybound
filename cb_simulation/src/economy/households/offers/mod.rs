@@ -1,5 +1,5 @@
 use compact::CVec;
-use economy::market::Deal;
+use crate::economy::market::Deal;
 use super::{HouseholdID, MemberIdx};
 use cb_time::units::TimeOfDayRange;
 

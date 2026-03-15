@@ -3,16 +3,16 @@ use compact::{CVec, CHashMap, COption};
 use stdweb::serde::Serde;
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 use stdweb::js_export;
-use browser_utils::{to_js_mesh, flatten_instances};
-use SYSTEM;
+use crate::browser_utils::{to_js_mesh, flatten_instances};
+use crate::SYSTEM;
 use cb_util::config_manager::{Name, ConfigUser, ConfigUserID};
 use ::std::collections::HashMap;
-use ::land_use::buildings::{BuildingID, BuildingStyle};
-use ::land_use::buildings::architecture::{build_building};
-use ::land_use::buildings::architecture::language::ArchitectureRule;
-use ::land_use::buildings::architecture::materials_and_props::{ALL_MATERIALS, ALL_PROP_TYPES};
-use ::land_use::zone_planning::Lot;
-use ::economy::households::HouseholdID;
+use cb_simulation::land_use::buildings::{BuildingID, BuildingStyle};
+use cb_simulation::land_use::buildings::architecture::{build_building};
+use cb_simulation::land_use::buildings::architecture::language::ArchitectureRule;
+use cb_simulation::land_use::buildings::architecture::materials_and_props::{ALL_MATERIALS, ALL_PROP_TYPES};
+use cb_simulation::land_use::zone_planning::Lot;
+use cb_simulation::economy::households::HouseholdID;
 
 #[cfg_attr(all(target_arch = "wasm32", target_os = "unknown"), js_export)]
 pub fn get_building_info(building_id: Serde<BuildingID>) {
@@ -62,7 +62,7 @@ impl ConfigUser<ArchitectureRule> for BrowserLandUseUI {
     }
 }
 
-use land_use::ui::{LandUseUI, LandUseUIID};
+use cb_simulation::land_use::ui::{LandUseUI, LandUseUIID};
 
 impl LandUseUI for BrowserLandUseUI {
     fn on_building_constructed(
@@ -111,7 +111,7 @@ impl LandUseUI for BrowserLandUseUI {
                         (prop_type.to_string(), material_update)
                     })
                     .collect::<HashMap<_, _>>()
-                    .into();;
+                    .into();
 
                 js! {
                     window.cbReactApp.boundSetState(oldState => update(oldState, {

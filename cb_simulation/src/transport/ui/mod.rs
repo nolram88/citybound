@@ -3,9 +3,9 @@ use compact::CVec;
 use kay::{ActorSystem, World, TypedID, RawID};
 use michelangelo::Mesh;
 use super::lane::{Lane, LaneID, SwitchLane, SwitchLaneID};
-use transport::pathfinding::trip::TripID;
+use crate::transport::pathfinding::trip::TripID;
 
-use dimensions::{LANE_DISTANCE, LANE_WIDTH, LANE_MARKER_WIDTH, LANE_MARKER_DASH_GAP,
+use crate::dimensions::{LANE_DISTANCE, LANE_WIDTH, LANE_MARKER_WIDTH, LANE_MARKER_DASH_GAP,
 LANE_MARKER_DASH_LENGTH};
 
 use itertools::Itertools;

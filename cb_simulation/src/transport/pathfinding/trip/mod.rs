@@ -3,13 +3,14 @@ use compact::CVec;
 use ordered_float::OrderedFloat;
 use cb_time::units::Instant;
 
-use transport::lane::LaneID;
+use crate::transport::lane::LaneID;
 use super::{PreciseLocation, RoughLocationID, LocationRequester, LocationRequesterID};
 
 use itertools::Itertools;
 use super::super::lane::Lane;
 
 use cb_util::log::{debug, warn};
+use cb_util::random::thread_rng;
 const LOG_T: &str = "Trips";
 
 #[derive(Compact, Clone)]
@@ -219,7 +220,7 @@ use rand::Rng;
 
 impl Sleeper for TripCreator {
     fn wake(&mut self, current_instant: Instant, world: &mut World) {
-        ::rand::thread_rng().shuffle(&mut self.lanes);
+        thread_rng().shuffle(&mut self.lanes);
 
         for mut pair in &self.lanes.iter().chunks(2) {
             if let (Some(source), Some(dest)) = (pair.next(), pair.next()) {

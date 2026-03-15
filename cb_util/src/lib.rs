@@ -6,8 +6,9 @@ extern crate uuid;
 extern crate arrayvec;
 extern crate kay;
 extern crate cb_time;
-#[cfg(feature = "server")]
-extern crate notify;
+#[cfg(target_arch = "wasm32")]
+#[macro_use]
+extern crate stdweb;
 extern crate serde;
 
 pub extern crate compact;

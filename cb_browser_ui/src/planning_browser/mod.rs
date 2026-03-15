@@ -10,13 +10,13 @@ use cb_planning::{
 };
 use cb_planning::plan_manager::ProjectID;
 use cb_planning::plan_manager::ui::{PlanningUI, PlanningUIID};
-use planning::{CBPlanningLogic, CBPlanManagerID, CBGestureIntent, CBPrototypeKind};
-use land_use::zone_planning::{LandUse, LAND_USES, ZoneIntent, ZoneConfig};
-use browser_utils::{updated_groups_to_js, to_js_mesh, FrameListener, FrameListenerID};
+use cb_simulation::planning::{CBPlanningLogic, CBPlanManagerID, CBGestureIntent, CBPrototypeKind};
+use cb_simulation::land_use::zone_planning::{LandUse, LAND_USES, ZoneIntent, ZoneConfig};
+use crate::browser_utils::{updated_groups_to_js, to_js_mesh, FrameListener, FrameListenerID};
 
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 use stdweb::js_export;
-use SYSTEM;
+use crate::SYSTEM;
 
 #[cfg_attr(all(target_arch = "wasm32", target_os = "unknown"), js_export)]
 pub fn start_new_gesture(
@@ -105,7 +105,7 @@ pub fn start_new_project(project_id: Serde<ProjectID>) {
     CBPlanManagerID::global_first(world).start_new_project(project_id.0, world);
 }
 
-use transport::transport_planning::{RoadIntent, RoadLaneConfig};
+use cb_simulation::transport::transport_planning::{RoadIntent, RoadLaneConfig};
 
 #[cfg_attr(all(target_arch = "wasm32", target_os = "unknown"), js_export)]
 pub fn new_road_intent(n_lanes_forward: usize, n_lanes_backward: usize) -> Serde<RoadIntent> {
@@ -173,7 +173,7 @@ pub struct BrowserPlanningUINonPersistedState {
 
 use descartes::ArcLinePath;
 use michelangelo::{Mesh};
-use dimensions::CONTROL_POINT_HANDLE_RADIUS;
+use cb_simulation::dimensions::CONTROL_POINT_HANDLE_RADIUS;
 
 pub fn static_meshes() -> Vec<(&'static str, Mesh)> {
     let dot_mesh = Mesh::from_path_as_band(
@@ -352,11 +352,11 @@ impl PlanningUI<CBPlanningLogic> for BrowserPlanningUI {
         new_actions: &ActionGroups,
         _world: &mut World,
     ) {
-        use transport::transport_planning::{
+        use cb_simulation::transport::transport_planning::{
             RoadPrototype, LanePrototype, SwitchLanePrototype, IntersectionPrototype,
         };
-        use transport::ui::{lane_mesh, marker_mesh, switch_marker_gap_mesh};
-        use land_use::zone_planning::{LotPrototype, LotOccupancy};
+        use cb_simulation::transport::ui::{lane_mesh, marker_mesh, switch_marker_gap_mesh};
+        use cb_simulation::land_use::zone_planning::{LotPrototype, LotOccupancy};
 
         let mut lanes_to_construct_add = Vec::new();
         let mut lanes_to_construct_rem = Vec::new();
@@ -578,20 +578,20 @@ impl PlanningUI<CBPlanningLogic> for BrowserPlanningUI {
         }
 
         let road_infos: HashMap<GestureID, RoadInfo> =
-            ::transport::transport_planning::gesture_intent_smooth_paths(effective_history)
+            cb_simulation::transport::transport_planning::gesture_intent_smooth_paths(effective_history)
                 .into_iter()
                 .map(|(gesture_id, _, road_intent, path)| {
                     (
                         gesture_id,
                         RoadInfo {
-                            outline: ::descartes::Band::new_asymmetric(
+                            outline: descartes::Band::new_asymmetric(
                                 path.clone(),
                                 f32::from(road_intent.n_lanes_backward)
-                                    * ::dimensions::LANE_DISTANCE
-                                    + 0.4 * ::dimensions::LANE_DISTANCE,
+                                    * cb_simulation::dimensions::LANE_DISTANCE
+                                    + 0.4 * cb_simulation::dimensions::LANE_DISTANCE,
                                 f32::from(road_intent.n_lanes_forward)
-                                    * ::dimensions::LANE_DISTANCE
-                                    + 0.4 * ::dimensions::LANE_DISTANCE,
+                                    * cb_simulation::dimensions::LANE_DISTANCE
+                                    + 0.4 * cb_simulation::dimensions::LANE_DISTANCE,
                             )
                             .outline()
                             .0,

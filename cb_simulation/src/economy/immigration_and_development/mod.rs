@@ -1,13 +1,13 @@
 use kay::{World, ActorSystem, TypedID};
 use compact::COption;
-use land_use::buildings::{UnitType, BuildingID, UnitIdx};
+use crate::land_use::buildings::{UnitType, BuildingID, UnitIdx};
 use cb_time::actors::{Sleeper, SleeperID, TimeID};
 use cb_time::units::{Instant, Duration};
 use cb_util::random::{seed, Rng};
 use cb_util::log::{debug};
 const LOG_T: &str = "Immigration/Development";
 
-use economy::households::household_kinds;
+use crate::economy::households::household_kinds;
 use self::household_kinds::family::FamilyID;
 use self::household_kinds::grocery_shop::GroceryShopID;
 use self::household_kinds::cow_farm::CowFarmID;
@@ -16,11 +16,11 @@ use self::household_kinds::vegetable_farm::VegetableFarmID;
 use self::household_kinds::mill::MillID;
 use self::household_kinds::bakery::BakeryID;
 use self::household_kinds::neighboring_town_trade::NeighboringTownTradeID;
-use land_use::buildings::BuildingStyle;
-use land_use::vacant_lots::VacantLotID;
-use land_use::zone_planning::BuildingIntent;
+use crate::land_use::buildings::BuildingStyle;
+use crate::land_use::vacant_lots::VacantLotID;
+use crate::land_use::zone_planning::BuildingIntent;
 use cb_planning::{Project, PrototypeID, Plan, GestureID, Gesture};
-use planning::{CBPlanManagerID, CBGestureIntent};
+use crate::planning::{CBPlanManagerID, CBGestureIntent};
 
 // TODO: somehow get rid of this horrible duplication by having something like
 // a pointer to an abstract Household trait...

@@ -7,7 +7,7 @@ use super::*;
 
 #[derive(Serialize, Deserialize)] #[serde(transparent)]
 pub struct ConfigUserID<C: Config> {
-    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<(C)>>
+    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<C>>
 }
 
 impl<C: Config> Copy for ConfigUserID<C> {}
@@ -29,7 +29,7 @@ impl<C: Config> PartialEq for ConfigUserID<C> {
 }
 impl<C: Config> Eq for ConfigUserID<C> {}
 
-pub struct ConfigUserRepresentative<C: Config>{ _marker: ::std::marker::PhantomData<Box<(C)>> }
+pub struct ConfigUserRepresentative<C: Config>{ _marker: ::std::marker::PhantomData<Box<C>> }
 
 impl<C: Config> ActorOrActorTrait for ConfigUserRepresentative<C> {
     type ID = ConfigUserID<C>;
@@ -111,7 +111,7 @@ impl<C: Config> Actor for ConfigManager<C> {
 
 #[derive(Serialize, Deserialize)] #[serde(transparent)]
 pub struct ConfigManagerID<C: Config> {
-    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<(C)>>
+    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<C>>
 }
 
 impl<C: Config> Copy for ConfigManagerID<C> {}
@@ -189,7 +189,7 @@ impl<CD: Config + DeserializeOwned> Actor for ConfigFileWatcher<CD> {
 
 #[derive(Serialize, Deserialize)] #[serde(transparent)]
 pub struct ConfigFileWatcherID<CD: Config + DeserializeOwned> {
-    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<(CD)>>
+    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<CD>>
 }
 
 impl<CD: Config + DeserializeOwned> Copy for ConfigFileWatcherID<CD> {}

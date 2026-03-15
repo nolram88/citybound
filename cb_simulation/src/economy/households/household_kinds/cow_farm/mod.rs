@@ -1,12 +1,12 @@
 use kay::{ActorSystem, World, TypedID, Actor};
 use cb_time::units::{TimeOfDay, TimeOfDayRange, Duration, Ticks};
 use cb_time::actors::TimeID;
-use economy::resources::Resource;
-use economy::resources::Resource::*;
-use economy::market::{Deal, EvaluationRequester, EvaluationRequesterID, EvaluatedSearchResult};
-use land_use::buildings::BuildingID;
+use crate::economy::resources::Resource;
+use crate::economy::resources::Resource::*;
+use crate::economy::market::{Deal, EvaluationRequester, EvaluationRequesterID, EvaluatedSearchResult};
+use crate::land_use::buildings::BuildingID;
 
-use economy::households::{Household, HouseholdID, HouseholdCore, MemberIdx, Offer};
+use crate::economy::households::{Household, HouseholdID, HouseholdCore, MemberIdx, Offer};
 
 #[derive(Compact, Clone)]
 pub struct CowFarm {
@@ -164,7 +164,7 @@ impl EvaluationRequester for CowFarm {
     fn on_result(&mut self, _e: &EvaluatedSearchResult, _: &mut World) {}
 }
 
-use transport::pathfinding::{RoughLocationID, RoughLocation, RoughLocationResolve};
+use crate::transport::pathfinding::{RoughLocationID, RoughLocation, RoughLocationResolve};
 
 impl RoughLocation for CowFarm {
     fn resolve(&self) -> RoughLocationResolve {
@@ -172,7 +172,7 @@ impl RoughLocation for CowFarm {
     }
 }
 
-use transport::pathfinding::trip::{TripListener, TripListenerID, TripID, TripResult};
+use crate::transport::pathfinding::trip::{TripListener, TripListenerID, TripID, TripResult};
 
 impl TripListener for CowFarm {
     fn trip_created(&mut self, trip: TripID, world: &mut World) {

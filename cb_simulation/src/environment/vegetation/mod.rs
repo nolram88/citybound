@@ -1,14 +1,14 @@
 use kay::{World, Fate, ActorSystem, TypedID};
 use compact::CVec;
 use descartes::{P2, RoughEq, AreaError};
-use planning::{CBPlanManagerID, CBConstructionID, CBPrototypeKind, CBGestureIntent};
+use crate::planning::{CBPlanManagerID, CBConstructionID, CBPrototypeKind, CBGestureIntent};
 use cb_planning::{Prototype, PrototypeID, PlanHistory, PlanResult,
 Project, Plan, Gesture, GestureID};
 use cb_planning::construction::{Constructable, ConstructableID};
-use transport::transport_planning::RoadPrototype;
-use land_use::zone_planning::{LotPrototype, LotOccupancy};
-use land_use::buildings::BuildingStyle;
-use land_use::buildings::architecture::footprint_area;
+use crate::transport::transport_planning::RoadPrototype;
+use crate::land_use::zone_planning::{LotPrototype, LotOccupancy};
+use crate::land_use::buildings::BuildingStyle;
+use crate::land_use::buildings::architecture::footprint_area;
 use cb_util::random::{seed, Rng};
 use noise::{NoiseFn, BasicMulti, Seedable, MultiFractal};
 

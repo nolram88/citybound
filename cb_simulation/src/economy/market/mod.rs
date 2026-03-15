@@ -3,7 +3,7 @@ use compact::{CVec, CDict};
 use super::resources::{Inventory, Entry, Resource, ResourceAmount};
 use super::households::OfferID;
 use cb_time::units::{TimeOfDayRange, Duration, Instant};
-use transport::pathfinding::{RoughLocationID, LocationRequesterID};
+use crate::transport::pathfinding::{RoughLocationID, LocationRequesterID};
 use cb_util::log::warn;
 const LOG_T: &str = "Market";
 
@@ -100,7 +100,7 @@ pub struct EvaluatedSearchResult {
     pub evaluated_deals: CVec<EvaluatedDeal>,
 }
 
-use transport::pathfinding::{PreciseLocation, LocationRequester, DistanceRequester,
+use crate::transport::pathfinding::{PreciseLocation, LocationRequester, DistanceRequester,
 DistanceRequesterID};
 
 #[derive(Compact, Clone)]

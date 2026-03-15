@@ -31,8 +31,8 @@ impl MemberIdx {
 use super::market::{MarketID, Deal, EvaluatedDeal, EvaluationRequester, EvaluationRequesterID,
 TripCostEstimatorID, EvaluatedSearchResult};
 use super::resources::{Resource, ResourceAmount, ResourceMap, Entry, Inventory};
-use transport::pathfinding::{RoughLocationID, RoughLocation};
-use transport::pathfinding::trip::{TripListener, TripID, TripResult, TripFate};
+use crate::transport::pathfinding::{RoughLocationID, RoughLocation};
+use crate::transport::pathfinding::trip::{TripListener, TripID, TripResult, TripFate};
 use self::tasks::{Task, TaskState, TaskEndSchedulerID};
 pub use self::offers::{Offer, OfferIdx, OfferID};
 

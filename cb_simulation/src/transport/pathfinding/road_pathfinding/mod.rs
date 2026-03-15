@@ -1,6 +1,6 @@
 use kay::{World, Actor};
-use transport::lane::{Lane, LaneID};
-use transport::lane::connectivity::Interaction;
+use crate::transport::lane::{Lane, LaneID};
+use crate::transport::lane::connectivity::Interaction;
 
 use super::{PathfindingCore, Link, LinkID, Location, LinkConnection,
 CommunicatedRoutingEntry, RoughLocation, RoughLocationResolve, PreciseLocation, RoughLocationID};

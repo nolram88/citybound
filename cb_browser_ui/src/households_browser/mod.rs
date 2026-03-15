@@ -2,10 +2,10 @@ use kay::{World, ActorSystem, TypedID};
 use stdweb::serde::Serde;
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 use stdweb::js_export;
-use SYSTEM;
+use crate::SYSTEM;
 
 #[cfg_attr(all(target_arch = "wasm32", target_os = "unknown"), js_export)]
-pub fn get_household_info(household_id: Serde<::economy::households::HouseholdID>) {
+pub fn get_household_info(household_id: Serde<cb_simulation::economy::households::HouseholdID>) {
     let system = unsafe { &mut *SYSTEM };
     let world = &mut system.world();
     household_id
@@ -24,13 +24,13 @@ impl BrowserHouseholdUI {
     }
 }
 
-use economy::households::ui::{HouseholdUI, HouseholdUIID};
+use cb_simulation::economy::households::ui::{HouseholdUI, HouseholdUIID};
 
 impl HouseholdUI for BrowserHouseholdUI {
     fn on_household_ui_info(
         &mut self,
-        id: ::economy::households::HouseholdID,
-        core: &::economy::households::HouseholdCore,
+        id: cb_simulation::economy::households::HouseholdID,
+        core: &cb_simulation::economy::households::HouseholdCore,
         _world: &mut World,
     ) {
         // js! {
@@ -48,12 +48,12 @@ impl HouseholdUI for BrowserHouseholdUI {
         // TODO: horrible workaround for Compact mis-serialising the best_offer COption (probably
         // because it's inside a CDict)
         let decision_state_workaround = match core.decision_state {
-            ::economy::households::DecisionState::Choosing(m, i, ref rsrc, _) => {
-                ::economy::households::DecisionState::Choosing(
+            cb_simulation::economy::households::DecisionState::Choosing(m, i, ref rsrc, _) => {
+                cb_simulation::economy::households::DecisionState::Choosing(
                     m,
                     i,
                     rsrc.clone(),
-                    ::compact::CDict::new(),
+                    compact::CDict::new(),
                 )
             }
             ref other => other.clone(),

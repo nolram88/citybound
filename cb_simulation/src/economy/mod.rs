@@ -1,7 +1,7 @@
 use kay::{ActorSystem, World};
 
 use cb_time::actors::TimeID;
-use planning::CBPlanManagerID;
+use crate::planning::CBPlanManagerID;
 
 pub mod resources;
 pub mod market;

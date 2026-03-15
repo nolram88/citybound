@@ -1,7 +1,7 @@
 use kay::{ World, TypedID};
 use super::{Building, Lot, BuildingID, BuildingStyle};
 use super::super::ui::{LandUseUIID};
-use economy::households::HouseholdID;
+use crate::economy::households::HouseholdID;
 
 impl Building {
     pub fn get_render_info(&mut self, ui: LandUseUIID, world: &mut World) {

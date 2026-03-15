@@ -3,6 +3,7 @@ name = "citybound"
 version = "0.3.0"
 authors = ["Anselm Eickhoff <anselm.eickhoff@gmail.com>"]
 license = "AGPL-3.0"
+edition = "2018"
 
 [workspace]
 members = [
@@ -39,3 +40,7 @@ codegen-units = 4
 
 [features]
 embed_assets = ["rust-embed-flag/embed_assets"]
+
+[patch.crates-io]
+chunky = { path = "./patches/chunky" }
+kay = { path = "./patches/kay" }

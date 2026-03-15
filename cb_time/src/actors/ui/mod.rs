@@ -1,8 +1,14 @@
 use kay::World;
+use crate::units::Instant;
 use super::{Time, TimeID};
 
 pub trait TimeUI {
-    fn on_time_info(&mut self, current_instant: ::units::Instant, speed: u16, _world: &mut World);
+    fn on_time_info(
+        &mut self,
+        current_instant: Instant,
+        speed: u16,
+        _world: &mut World,
+    );
 }
 
 impl Time {

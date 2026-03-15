@@ -1,8 +1,8 @@
 use kay::World;
 use compact::CVec;
-use transport::transport_planning::{RoadIntent, RoadPrototype};
-use land_use::zone_planning::{ZoneIntent, BuildingIntent, LotPrototype};
-use environment::vegetation::{PlantIntent, PlantPrototype};
+use crate::transport::transport_planning::{RoadIntent, RoadPrototype};
+use crate::land_use::zone_planning::{ZoneIntent, BuildingIntent, LotPrototype};
+use crate::environment::vegetation::{PlantIntent, PlantPrototype};
 use cb_planning::{PlanningLogic, PrototypeID, PlanningStepFn};
 use cb_planning::plan_manager::{PlanManager, PlanManagerID};
 use cb_planning::construction::{
@@ -18,9 +18,9 @@ impl PlanningLogic for CBPlanningLogic {
 
     fn planning_step_functions() -> &'static [PlanningStepFn<Self>] {
         &[
-            ::transport::transport_planning::calculate_prototypes,
-            ::land_use::zone_planning::calculate_prototypes,
-            ::environment::vegetation::calculate_prototypes,
+            crate::transport::transport_planning::calculate_prototypes,
+            crate::land_use::zone_planning::calculate_prototypes,
+            crate::environment::vegetation::calculate_prototypes,
         ]
     }
 }

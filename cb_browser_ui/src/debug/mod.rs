@@ -2,12 +2,12 @@ use kay::TypedID;
 use stdweb::serde::Serde;
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 use stdweb::js_export;
-use SYSTEM;
+use crate::SYSTEM;
 
 use cb_planning::GestureID;
 use cb_planning::plan_manager::ProjectID;
-use planning::{CBPlanManagerID, CBGestureIntent};
-use transport::transport_planning::RoadLaneConfig;
+use cb_simulation::planning::{CBPlanManagerID, CBGestureIntent};
+use cb_simulation::transport::transport_planning::RoadLaneConfig;
 use descartes::{Corner};
 
 #[cfg_attr(all(target_arch = "wasm32", target_os = "unknown"), js_export)]
@@ -17,8 +17,8 @@ pub fn plan_grid(project_id: Serde<ProjectID>, n: Serde<isize>, n_lanes: Serde<u
 
     let plan_manager = CBPlanManagerID::global_first(world);
 
-    use ::transport::transport_planning::RoadIntent;
-    use ::descartes::P2;
+    use cb_simulation::transport::transport_planning::RoadIntent;
+    use descartes::P2;
 
     for x in -n.0 / 2..n.0 / 2 {
         let id = GestureID::new();
@@ -64,7 +64,7 @@ pub fn spawn_cars(tries_per_lane: usize) {
     let system = unsafe { &mut *SYSTEM };
     let world = &mut system.world();
     for _ in 0..tries_per_lane {
-        ::transport::lane::LaneID::global_broadcast(world).manually_spawn_car_add_lane(world);
+        cb_simulation::transport::lane::LaneID::global_broadcast(world).manually_spawn_car_add_lane(world);
     }
 }
 

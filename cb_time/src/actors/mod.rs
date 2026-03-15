@@ -3,7 +3,7 @@ use compact::CVec;
 
 pub mod ui;
 
-pub use ::units::{Instant, Ticks, Duration, TICKS_PER_SIM_MINUTE, TICKS_PER_SIM_SECOND,
+pub use crate::units::{Instant, Ticks, Duration, TICKS_PER_SIM_MINUTE, TICKS_PER_SIM_SECOND,
 TimeOfDay, TimeOfDayRange};
 
 pub trait Temporal {

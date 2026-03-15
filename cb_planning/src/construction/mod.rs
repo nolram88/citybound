@@ -1,6 +1,6 @@
 use kay::{World, Fate, ActorSystem};
 use compact::{CVec, CHashMap, Compact};
-use ::{PrototypeID, Prototype, Action, ActionGroups};
+use crate::{Action, ActionGroups, Prototype, PrototypeID};
 use cb_time::actors::{Temporal, TemporalID};
 use cb_time::units::Instant;
 use cb_util::log::debug;

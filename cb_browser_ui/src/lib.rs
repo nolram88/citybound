@@ -1,12 +1,12 @@
-#![recursion_limit = "256"]
-// TODO: remove once https://github.com/rust-lang/rust/issues/54726 is resolved
 #![feature(custom_inner_attributes)]
+#![recursion_limit = "256"]
 
 #[macro_use]
 extern crate stdweb;
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 use stdweb::js_export;
 
+extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 
@@ -17,11 +17,13 @@ use kay::{ActorSystem, TypedID};
 extern crate compact_macros;
 
 extern crate cb_simulation;
-use cb_simulation::*;
+pub use cb_simulation::{dimensions, economy, environment, land_use, planning, setup_common, transport};
 
 extern crate cb_util;
 extern crate cb_time;
 extern crate cb_planning;
+extern crate serde_wasm_bindgen;
+extern crate wasm_bindgen;
 
 use std::panic;
 
@@ -33,12 +35,15 @@ pub mod transport_browser;
 pub mod land_use_browser;
 pub mod vegetation_browser;
 pub mod browser_utils;
+pub mod wasm_exports;
 
 // TODO: not thread safe for now
 static mut SYSTEM: *mut ActorSystem = 0 as *mut ActorSystem;
 
 #[cfg_attr(all(target_arch = "wasm32", target_os = "unknown"), js_export)]
 pub fn start() {
+    stdweb::initialize();
+
     panic::set_hook(Box::new(|info| {
         js! {
             throw new Error("Rust WASM error: " + @{info.to_string()});
@@ -163,7 +168,7 @@ use stdweb::serde::Serde;
 
 #[cfg_attr(all(target_arch = "wasm32", target_os = "unknown"), js_export)]
 pub fn point_in_area(point: Serde<descartes::P2>, area: Serde<descartes::Area>) -> bool {
-    use ::descartes::PointContainer;
+    use descartes::PointContainer;
     area.0.contains(point.0)
 }
 
@@ -174,7 +179,7 @@ pub fn point_close_to_path(
     max_distance_right: Serde<descartes::N>,
     max_distance_left: Serde<descartes::N>,
 ) -> Serde<Option<(descartes::P2, descartes::P2, descartes::V2)>> {
-    use ::descartes::WithUniqueOrthogonal;
+    use descartes::WithUniqueOrthogonal;
     Serde(
         path.0
             .project(point.0)

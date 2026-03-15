@@ -3,7 +3,7 @@ use compact::CVec;
 use std::collections::HashMap;
 use descartes::LinePath;
 use michelangelo::{MeshGrouper, Instance};
-use browser_utils::{FrameListener, FrameListenerID, flatten_instances, updated_groups_to_js};
+use crate::browser_utils::{FrameListener, FrameListenerID, flatten_instances, updated_groups_to_js};
 
 #[derive(Compact, Clone)]
 pub struct BrowserTransportUI {
@@ -26,7 +26,7 @@ impl ::std::ops::DerefMut for BrowserTransportUI {
 }
 
 pub struct BrowserTransportUINonPersistedState {
-    car_instance_buffers: HashMap<RawID, Vec<::michelangelo::Instance>>,
+    car_instance_buffers: HashMap<RawID, Vec<michelangelo::Instance>>,
     car_colors: Vec<[f32; 3]>,
 
     // transport geometry
@@ -38,8 +38,8 @@ pub struct BrowserTransportUINonPersistedState {
 impl BrowserTransportUI {
     pub fn spawn(id: BrowserTransportUIID, world: &mut World) -> BrowserTransportUI {
         {
-            ::transport::lane::LaneID::global_broadcast(world).get_render_info(id.into(), world);
-            ::transport::lane::SwitchLaneID::global_broadcast(world)
+            cb_simulation::transport::lane::LaneID::global_broadcast(world).get_render_info(id.into(), world);
+            cb_simulation::transport::lane::SwitchLaneID::global_broadcast(world)
                 .get_render_info(id.into(), world);
         }
 
@@ -58,8 +58,8 @@ impl BrowserTransportUI {
 
 impl FrameListener for BrowserTransportUI {
     fn on_frame(&mut self, world: &mut World) {
-        ::transport::lane::LaneID::global_broadcast(world).get_car_info(self.id_as(), world);
-        ::transport::lane::SwitchLaneID::global_broadcast(world).get_car_info(self.id_as(), world);
+        cb_simulation::transport::lane::LaneID::global_broadcast(world).get_car_info(self.id_as(), world);
+        cb_simulation::transport::lane::SwitchLaneID::global_broadcast(world).get_car_info(self.id_as(), world);
 
         let mut car_instances = Vec::with_capacity(600_000);
 
@@ -81,7 +81,7 @@ impl FrameListener for BrowserTransportUI {
         use ::stdweb::unstable::TryInto;
 
         let car_color_vals: Vec<::stdweb::Value> = js! {
-            return require("../../../src/colors").default.carColors;
+            return window.cbColors.carColors;
         }
         .try_into()
         .unwrap();
@@ -96,7 +96,7 @@ impl FrameListener for BrowserTransportUI {
     }
 }
 
-use transport::ui::{TransportUI, TransportUIID, CarRenderInfo};
+use cb_simulation::transport::ui::{TransportUI, TransportUIID, CarRenderInfo};
 
 impl TransportUI for BrowserTransportUI {
     fn on_lane_constructed(
@@ -107,7 +107,7 @@ impl TransportUI for BrowserTransportUI {
         on_intersection: bool,
         _world: &mut World,
     ) {
-        use ::transport::ui::{lane_mesh, marker_mesh, switch_marker_gap_mesh};
+        use cb_simulation::transport::ui::{lane_mesh, marker_mesh, switch_marker_gap_mesh};
         if is_switch {
             let updated_lane_marker_gaps_groups = self
                 .lane_marker_gaps_grouper

@@ -9,11 +9,11 @@ use ordered_float::OrderedFloat;
 use cb_planning::{
     VersionedGesture, StepID, PrototypeID, PlanHistory, PlanResult, Prototype, GestureID,
 };
-use planning::{CBPrototypeKind, CBGestureIntent};
+use crate::planning::{CBPrototypeKind, CBGestureIntent};
 
 mod intersection_connections;
 pub mod smooth_path;
-use dimensions::{
+use crate::dimensions::{
     LANE_DISTANCE, CENTER_LANE_DISTANCE, MIN_SWITCHING_LANE_LENGTH,
     SWITCHING_LANE_OVERLAP_TOLERANCE,
 };
@@ -355,7 +355,7 @@ pub fn calculate_prototypes(
                 let mut end_influence = lane_influence_id;
                 let mut cuts = Vec::new();
 
-                use planning::CBPrototypeKind::Road;
+                use crate::planning::CBPrototypeKind::Road;
 
                 for prototype in &mut intersection_prototypes {
                     if let Prototype {
@@ -457,7 +457,7 @@ pub fn calculate_prototypes(
         enum SwitchLaneLabel {
             Left(PrototypeID),
             Right(PrototypeID),
-        };
+        }
 
         let mut switch_lane_embedding = AreaEmbedding::new(30.0);
 

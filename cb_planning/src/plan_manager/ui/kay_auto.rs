@@ -7,7 +7,7 @@ use super::*;
 
 #[derive(Serialize, Deserialize)] #[serde(transparent)]
 pub struct PlanningUIID<Logic: PlanningLogic> {
-    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<(Logic)>>
+    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<Logic>>
 }
 
 impl<Logic: PlanningLogic> Copy for PlanningUIID<Logic> {}
@@ -29,7 +29,7 @@ impl<Logic: PlanningLogic> PartialEq for PlanningUIID<Logic> {
 }
 impl<Logic: PlanningLogic> Eq for PlanningUIID<Logic> {}
 
-pub struct PlanningUIRepresentative<Logic: PlanningLogic>{ _marker: ::std::marker::PhantomData<Box<(Logic)>> }
+pub struct PlanningUIRepresentative<Logic: PlanningLogic>{ _marker: ::std::marker::PhantomData<Box<Logic>> }
 
 impl<Logic: PlanningLogic> ActorOrActorTrait for PlanningUIRepresentative<Logic> {
     type ID = PlanningUIID<Logic>;

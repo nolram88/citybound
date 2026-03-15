@@ -20,7 +20,7 @@ impl<Logic: PlanningLogic + 'static> Actor for PlanManager<Logic> {
 
 #[derive(Serialize, Deserialize)] #[serde(transparent)]
 pub struct PlanManagerID<Logic: PlanningLogic + 'static> {
-    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<(Logic)>>
+    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<Logic>>
 }
 
 impl<Logic: PlanningLogic + 'static> Copy for PlanManagerID<Logic> {}

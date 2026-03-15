@@ -3,17 +3,17 @@ use descartes::{
     P2, V2, EditArcLinePath, Area, ClosedLinePath, LinePath, PointContainer, AreaError,
     WithUniqueOrthogonal, AreaEmbedding, AreaFilter,
 };
-use land_use::buildings::BuildingStyle;
+use crate::land_use::buildings::BuildingStyle;
 use ordered_float::OrderedFloat;
 use itertools::Itertools;
 use cb_util::random::{seed, RngCore};
 
-use transport::transport_planning::{RoadPrototype, LanePrototype};
+use crate::transport::transport_planning::{RoadPrototype, LanePrototype};
 
 use cb_planning::{
     PlanHistory, VersionedGesture, PlanResult, Prototype, PrototypeID, GestureID, StepID,
 };
-use planning::{CBPrototypeKind, CBGestureIntent};
+use crate::planning::{CBPrototypeKind, CBGestureIntent};
 
 #[derive(Compact, Clone, Debug, Serialize, Deserialize)]
 pub struct ZoneIntent {
@@ -65,7 +65,7 @@ pub struct Lot {
 impl Lot {
     pub fn center_point(&self) -> P2 {
         let outline = &self.original_area.primitives[0].boundary.path();
-        P2::from_coordinates(
+        P2::from(
             (0..10).fold(V2::new(0.0, 0.0), |sum_point, i| {
                 sum_point + outline.along(i as f32 * (outline.length() / 10.0)).coords
             }) / 10.0,
@@ -141,7 +141,7 @@ pub fn calculate_prototypes(
         Paved(PrototypeID),
         Building(GestureID, StepID),
         Zone(ZoneConfig, GestureID, StepID),
-    };
+    }
 
     let mut zone_embedding = AreaEmbedding::new(30.0);
 

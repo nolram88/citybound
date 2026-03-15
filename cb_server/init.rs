@@ -3,17 +3,26 @@ extern crate clap;
 
 use std::time::{Instant, Duration};
 
+fn display_host_for_mode(mode: &str) -> &'static str {
+    match mode {
+        "local" => "localhost",
+        "lan" => "<your LAN IP>",
+        "internet" => "<your public IP>",
+        _ => unreachable!(),
+    }
+}
+
+fn display_url(network_config: &NetworkConfig) -> String {
+    let port = network_config
+        .serve_host_port
+        .split(':')
+        .last()
+        .unwrap_or("");
+    format!("http://{}:{}", display_host_for_mode(network_config.mode.as_str()), port)
+}
+
 pub fn print_start_message(version: &str, network_config: &NetworkConfig) {
-    let my_host = format!(
-        "{}:{}",
-        match network_config.mode.as_str() {
-            "local" => "localhost",
-            "lan" => "<your LAN IP>",
-            "internet" => "<your public IP>",
-            _ => unreachable!(),
-        },
-        network_config.serve_host_port.split(':').last().unwrap(),
-    );
+    let my_host = display_url(network_config);
 
     println!("  {: ^41}  ", format!("Citybound {}", version.trim()));
     println!();
@@ -21,7 +30,7 @@ pub fn print_start_message(version: &str, network_config: &NetworkConfig) {
     println!("  {: ^41}  ", "To connect and start playing, please open");
     println!("  {: ^41}  ", "this address in Chrome/Firefox/Safari:");
     println!("╭───────────────────────────────────────────╮");
-    println!("│ {: ^41} │", format!("http://{}", my_host));
+    println!("│ {: ^41} │", my_host);
     println!("╰───────────────────────────────────────────╯");
 }
 
@@ -35,9 +44,9 @@ pub struct NetworkConfig {
     pub skip_ratio: usize,
 }
 
-pub fn match_cmd_line_args(version: &str) -> (NetworkConfig, String) {
+fn build_cli<'a, 'b>(version: &'a str) -> clap::App<'a, 'b> {
     use self::clap::{Arg, App};
-    let matches = App::new("citybound")
+    App::new("citybound")
         .version(version.trim())
         .author("ae play (Anselm Eickhoff)")
         .about("The city is us.")
@@ -103,8 +112,9 @@ pub fn match_cmd_line_args(version: &str) -> (NetworkConfig, String) {
                 .default_value("5")
                 .help("How many network turns to skip if server/client are ahead"),
         )
-        .get_matches();
+}
 
+fn matches_to_config(matches: &clap::ArgMatches<'_>) -> (NetworkConfig, String) {
     (
         NetworkConfig {
             serve_host_port: matches.value_of("bind").unwrap().to_owned(),
@@ -116,6 +126,22 @@ pub fn match_cmd_line_args(version: &str) -> (NetworkConfig, String) {
         },
         matches.value_of("CITY_FOLDER").unwrap().to_owned(),
     )
+}
+
+pub fn parse_cmd_line_args_from<I, T>(
+    version: &str,
+    args: I,
+) -> Result<(NetworkConfig, String), clap::Error>
+where
+    I: IntoIterator<Item = T>,
+    T: Into<::std::ffi::OsString> + Clone,
+{
+    let matches = build_cli(version).get_matches_from_safe(args)?;
+    Ok(matches_to_config(&matches))
+}
+
+pub fn match_cmd_line_args(version: &str) -> (NetworkConfig, String) {
+    parse_cmd_line_args_from(version, ::std::env::args_os()).unwrap_or_else(|e| e.exit())
 }
 
 pub fn ensure_crossplatform_proper_thread<F: Fn() -> () + Send + 'static>(callback: F) {
@@ -134,17 +160,18 @@ pub fn ensure_crossplatform_proper_thread<F: Fn() -> () + Send + 'static>(callba
     }
 }
 
-use std::panic::{set_hook, PanicInfo, Location};
+use std::panic::{set_hook, PanicHookInfo, Location};
 use self::backtrace::Backtrace;
 use std::fs::File;
 use std::io::Write;
 
 pub fn set_error_hook() {
-    let callback: Box<dyn FnMut(&PanicInfo)> = Box::new(move |panic_info| {
+    let callback: Box<dyn Fn(&PanicHookInfo<'_>) + Sync + Send + 'static> =
+        Box::new(move |panic_info| {
         let title = "SIMULATION BROKE :(";
 
         let message = match panic_info.payload().downcast_ref::<String>() {
-            Some(string) => (string.clone()),
+            Some(string) => string.clone(),
             None => match panic_info.payload().downcast_ref::<&'static str>() {
                 Some(static_str) => (*static_str).to_string(),
                 None => "Weird error type".to_string(),
@@ -189,7 +216,7 @@ pub fn set_error_hook() {
         }
     });
 
-    set_hook(unsafe { ::std::mem::transmute(callback) });
+    set_hook(callback);
 }
 
 pub struct FrameCounter {
@@ -230,5 +257,163 @@ impl FrameCounter {
 impl Default for FrameCounter {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::Mutex;
+    use std::sync::OnceLock;
+    use std::sync::atomic::{AtomicBool, Ordering};
+    use std::sync::Arc;
+    use std::time::Duration;
+
+    fn panic_hook_lock() -> &'static Mutex<()> {
+        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+        LOCK.get_or_init(|| Mutex::new(()))
+    }
+
+    #[test]
+    fn parses_default_local_args() {
+        let (cfg, city_folder) = parse_cmd_line_args_from("0.0.0", vec!["citybound"]).unwrap();
+
+        assert_eq!(cfg.mode, "local");
+        assert_eq!(cfg.serve_host_port, "localhost:1234");
+        assert_eq!(cfg.bind_sim, "localhost:9999");
+        assert_eq!(cfg.batch_msg_bytes, 500000);
+        assert_eq!(cfg.ok_turn_dist, 2);
+        assert_eq!(cfg.skip_ratio, 5);
+        assert_eq!(city_folder, "./city");
+    }
+
+    #[test]
+    fn parses_mode_internet_defaults() {
+        let (cfg, _) =
+            parse_cmd_line_args_from("0.0.0", vec!["citybound", "--mode", "internet"]).unwrap();
+
+        assert_eq!(cfg.mode, "internet");
+        assert_eq!(cfg.serve_host_port, "0.0.0.0:1234");
+        assert_eq!(cfg.bind_sim, "0.0.0.0:9999");
+        assert_eq!(cfg.ok_turn_dist, 30);
+    }
+
+    #[test]
+    fn parses_explicit_overrides() {
+        let (cfg, city_folder) = parse_cmd_line_args_from(
+            "0.0.0",
+            vec![
+                "citybound",
+                "my_city",
+                "--mode",
+                "lan",
+                "--bind",
+                "127.0.0.1:8080",
+                "--bind-sim",
+                "127.0.0.1:9000",
+                "--batch-msg-bytes",
+                "12345",
+                "--ok-turn-dist",
+                "99",
+                "--skip-ratio",
+                "7",
+            ],
+        )
+        .unwrap();
+
+        assert_eq!(cfg.mode, "lan");
+        assert_eq!(cfg.serve_host_port, "127.0.0.1:8080");
+        assert_eq!(cfg.bind_sim, "127.0.0.1:9000");
+        assert_eq!(cfg.batch_msg_bytes, 12345);
+        assert_eq!(cfg.ok_turn_dist, 99);
+        assert_eq!(cfg.skip_ratio, 7);
+        assert_eq!(city_folder, "my_city");
+    }
+
+    #[test]
+    fn formats_display_url_for_all_modes() {
+        let mut cfg = NetworkConfig {
+            mode: "local".to_owned(),
+            serve_host_port: "0.0.0.0:1234".to_owned(),
+            bind_sim: "0.0.0.0:9999".to_owned(),
+            batch_msg_bytes: 1,
+            ok_turn_dist: 1,
+            skip_ratio: 1,
+        };
+
+        assert_eq!(display_url(&cfg), "http://localhost:1234");
+
+        cfg.mode = "lan".to_owned();
+        assert_eq!(display_url(&cfg), "http://<your LAN IP>:1234");
+
+        cfg.mode = "internet".to_owned();
+        assert_eq!(display_url(&cfg), "http://<your public IP>:1234");
+    }
+
+    #[test]
+    fn parse_rejects_invalid_mode() {
+        let result = parse_cmd_line_args_from("0.0.0", vec!["citybound", "--mode", "invalid"]);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn ensure_crossplatform_proper_thread_runs_callback() {
+        let ran = Arc::new(AtomicBool::new(false));
+        let ran_clone = Arc::clone(&ran);
+
+        ensure_crossplatform_proper_thread(move || {
+            ran_clone.store(true, Ordering::SeqCst);
+        });
+
+        assert!(ran.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn frame_counter_keeps_recent_samples_only() {
+        let mut frame_counter = FrameCounter::new();
+
+        for _ in 0..15 {
+            frame_counter.start_frame();
+            std::thread::sleep(Duration::from_millis(1));
+        }
+
+        assert_eq!(frame_counter.elapsed_ms_collected.len(), 10);
+        frame_counter.sleep_if_faster_than(120);
+    }
+
+    #[test]
+    fn error_hook_writes_report_for_str_payload() {
+        let _guard = panic_hook_lock().lock().unwrap();
+        let path = std::env::temp_dir().join("cb_last_error.txt");
+        let previous_hook = std::panic::take_hook();
+
+        set_error_hook();
+        let _ = std::panic::catch_unwind(|| panic!("boom"));
+
+        std::panic::set_hook(previous_hook);
+
+        let report = std::fs::read_to_string(&path).expect("expected error report");
+        assert!(report.contains("SIMULATION BROKE :("));
+        assert!(report.contains("WHAT HAPPENED:"));
+        assert!(report.contains("boom"));
+
+        let _ = std::fs::remove_file(path);
+    }
+
+    #[test]
+    fn error_hook_writes_report_for_string_payload() {
+        let _guard = panic_hook_lock().lock().unwrap();
+        let path = std::env::temp_dir().join("cb_last_error.txt");
+        let previous_hook = std::panic::take_hook();
+
+        set_error_hook();
+        let _ = std::panic::catch_unwind(|| std::panic::panic_any(String::from("boom-string")));
+
+        std::panic::set_hook(previous_hook);
+
+        let report = std::fs::read_to_string(&path).expect("expected error report");
+        assert!(report.contains("boom-string"));
+
+        let _ = std::fs::remove_file(path);
     }
 }

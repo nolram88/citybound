@@ -1,0 +1,36 @@
+language: rust
+
+dist: trusty
+sudo: false
+
+custom:
+  test: &test
+    stage: test
+    cache:
+      cargo: true
+      directories:
+        - /home/travis/.local/share/cargo-web/emscripten
+    addons:
+      chrome: stable
+    script:
+      - nvm install 9
+      - ./ci/install_cargo_web.sh
+      - ./ci/install_wasm_bindgen.sh
+      - ./ci/install_wasm_pack.sh
+      - ./ci/run_tests.sh
+
+jobs:
+  include:
+    - <<: *test
+      os: linux
+      rust: nightly
+    - <<: *test
+      os: linux
+      rust: stable
+    - <<: *test
+      os: linux
+      rust: beta
+    - <<: *test
+      os: linux
+      rust: 1.33.0
+      env: SKIP_RUNTIME_COMPATIBILITY_CHECK=1

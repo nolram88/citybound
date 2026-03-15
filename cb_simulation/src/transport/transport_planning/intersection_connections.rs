@@ -286,7 +286,7 @@ pub fn create_connecting_lanes(intersection: &mut IntersectionPrototype) {
                         iteration,
                     );
                     pop_unused_compatible_where(
-                        |role| (role.inner_turn || role.u_turn),
+                        |role| role.inner_turn || role.u_turn,
                         &mut current_lanes,
                         iteration,
                     );
@@ -294,7 +294,7 @@ pub fn create_connecting_lanes(intersection: &mut IntersectionPrototype) {
                     // inner phase: consider nonconflicting inner/u turns,
                     // then outer turns, then straights
                     pop_unused_compatible_where(
-                        |role| (role.inner_turn || role.u_turn),
+                        |role| role.inner_turn || role.u_turn,
                         &mut current_lanes,
                         iteration,
                     );
@@ -332,7 +332,7 @@ pub fn create_connecting_lanes(intersection: &mut IntersectionPrototype) {
                     reuse_compatible_where(|role| role.straight, &mut current_lanes, iteration);
                     reuse_compatible_where(|role| role.outer_turn, &mut current_lanes, iteration);
                     reuse_compatible_where(
-                        |role| (role.inner_turn || role.u_turn),
+                        |role| role.inner_turn || role.u_turn,
                         &mut current_lanes,
                         iteration,
                     );
@@ -340,7 +340,7 @@ pub fn create_connecting_lanes(intersection: &mut IntersectionPrototype) {
                     // inner phase: consider nonconflicting inner/u turns,
                     // then outer turns, then straights
                     reuse_compatible_where(
-                        |role| (role.inner_turn || role.u_turn),
+                        |role| role.inner_turn || role.u_turn,
                         &mut current_lanes,
                         iteration,
                     );

@@ -7,7 +7,7 @@ use super::*;
 
 #[derive(Serialize, Deserialize)] #[serde(transparent)]
 pub struct ConstructableID<PK: PrototypeKind> {
-    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<(PK)>>
+    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<PK>>
 }
 
 impl<PK: PrototypeKind> Copy for ConstructableID<PK> {}
@@ -29,7 +29,7 @@ impl<PK: PrototypeKind> PartialEq for ConstructableID<PK> {
 }
 impl<PK: PrototypeKind> Eq for ConstructableID<PK> {}
 
-pub struct ConstructableRepresentative<PK: PrototypeKind>{ _marker: ::std::marker::PhantomData<Box<(PK)>> }
+pub struct ConstructableRepresentative<PK: PrototypeKind>{ _marker: ::std::marker::PhantomData<Box<PK>> }
 
 impl<PK: PrototypeKind> ActorOrActorTrait for ConstructableRepresentative<PK> {
     type ID = ConstructableID<PK>;
@@ -98,7 +98,7 @@ impl<PK: PrototypeKind> Actor for Construction<PK> {
 
 #[derive(Serialize, Deserialize)] #[serde(transparent)]
 pub struct ConstructionID<PK: PrototypeKind> {
-    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<(PK)>>
+    _raw_id: RawID, _marker: ::std::marker::PhantomData<Box<PK>>
 }
 
 impl<PK: PrototypeKind> Copy for ConstructionID<PK> {}

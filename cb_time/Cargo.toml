@@ -4,6 +4,7 @@ version = "0.3.0"
 authors = ["Anselm Eickhoff <anselm.eickhoff@gmail.com>"]
 license = "AGPL-3.0"
 build = "./build.rs"
+edition = "2018"
 
 [dependencies]
 serde = "1.0"

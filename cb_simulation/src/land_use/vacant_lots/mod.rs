@@ -6,15 +6,15 @@ use descartes::{
 };
 use ordered_float::OrderedFloat;
 
-use land_use::zone_planning::{Lot, BuildingIntent};
-use land_use::buildings::BuildingStyle;
-use land_use::buildings::architecture::ideal_lot_shape;
-use economy::immigration_and_development::DevelopmentManagerID;
+use crate::land_use::zone_planning::{Lot, BuildingIntent};
+use crate::land_use::buildings::BuildingStyle;
+use crate::land_use::buildings::architecture::ideal_lot_shape;
+use crate::economy::immigration_and_development::DevelopmentManagerID;
 use itertools::Itertools;
 
 use cb_planning::construction::{Constructable, ConstructableID};
 use cb_planning::{Prototype, PrototypeID};
-use planning::{CBConstructionID, CBPrototypeKind};
+use crate::planning::{CBConstructionID, CBPrototypeKind};
 use cb_util::log::{debug, error};
 const LOG_T: &str = "Vacant Lots";
 
@@ -149,7 +149,7 @@ impl Lot {
                     enum SplittingLabel {
                         Lot,
                         Splitter,
-                    };
+                    }
 
                     let mut embedding = AreaEmbedding::new(width / 10.0);
 

@@ -12,7 +12,7 @@ use super::microtraffic::LaneLikeID;
 
 use cb_planning::Prototype;
 use cb_planning::construction::{Constructable, ConstructableID};
-use planning::{CBConstructionID, CBPrototypeKind};
+use crate::planning::{CBConstructionID, CBPrototypeKind};
 use super::transport_planning::{
     RoadPrototype, LanePrototype, SwitchLanePrototype, IntersectionPrototype,
 };
@@ -20,7 +20,7 @@ use super::transport_planning::{
 use cb_util::log::debug;
 const LOG_T: &str = "Transport Construction";
 
-use dimensions::{LANE_CONNECTION_TOLERANCE, MAX_SWITCHING_LANE_DISTANCE, MIN_SWITCHING_LANE_LENGTH};
+use crate::dimensions::{LANE_CONNECTION_TOLERANCE, MAX_SWITCHING_LANE_DISTANCE, MIN_SWITCHING_LANE_LENGTH};
 
 impl RoadPrototype {
     pub fn construct(
@@ -194,7 +194,7 @@ impl Lane {
                 });
             }
 
-            ::transport::pathfinding::Link::on_connect(self);
+            crate::transport::pathfinding::Link::on_connect(self);
         }
 
         if other_end.rough_eq_by(self.construction.path.start(), LANE_CONNECTION_TOLERANCE) {
@@ -215,7 +215,7 @@ impl Lane {
                 });
             }
 
-            ::transport::pathfinding::Link::on_connect(self);
+            crate::transport::pathfinding::Link::on_connect(self);
         }
 
         if reply_needed && connected {
@@ -333,12 +333,12 @@ impl Lane {
             .any(|existing| existing.direct_partner() == interaction.direct_partner());
         if !already_a_partner {
             self.connectivity.interactions.push(interaction);
-            ::transport::pathfinding::Link::on_connect(self);
+            crate::transport::pathfinding::Link::on_connect(self);
         }
     }
 }
 
-use transport::pathfinding::trip::{TripResult, TripFate};
+use crate::transport::pathfinding::trip::{TripResult, TripFate};
 
 impl Lane {
     pub fn disconnect(&mut self, other_id: LaneID, world: &mut World) {
@@ -360,7 +360,7 @@ impl Lane {
             );
         }
 
-        ::transport::pathfinding::Link::on_disconnect(self);
+        crate::transport::pathfinding::Link::on_disconnect(self);
         other_id.on_confirm_disconnect(world);
     }
 
@@ -383,7 +383,7 @@ impl Lane {
             );
         }
 
-        ::transport::pathfinding::Link::on_disconnect(self);
+        crate::transport::pathfinding::Link::on_disconnect(self);
         other_id.on_confirm_disconnect(world);
     }
 
@@ -414,9 +414,10 @@ impl Lane {
 
         super::ui::on_unbuild(self, world);
         unsafe {
-            MEMOIZED_BANDS_OUTLINES
-                .get_or_insert_with(FnvHashMap::default)
-                .remove(&self.id_as());
+            let memoized = std::ptr::addr_of_mut!(MEMOIZED_BANDS_OUTLINES);
+            if let Some(outlines) = (*memoized).as_mut() {
+                outlines.remove(&self.id_as());
+            }
         }
 
         if disconnects_remaining == 0 {
@@ -459,13 +460,13 @@ impl Lane {
             );
         }
 
-        ::transport::pathfinding::road_pathfinding::on_unbuild(self, world);
+        crate::transport::pathfinding::road_pathfinding::on_unbuild(self, world);
     }
 }
 
-use land_use::buildings::{BuildingID};
-use dimensions::LANE_DISTANCE;
-use transport::pathfinding::PreciseLocation;
+use crate::land_use::buildings::{BuildingID};
+use crate::dimensions::LANE_DISTANCE;
+use crate::transport::pathfinding::PreciseLocation;
 
 impl Lane {
     pub fn try_reconnect_building(

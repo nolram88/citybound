@@ -1,8 +1,10 @@
 use kay::{World};
 use compact::{CHashMap, COption};
 use descartes::AreaError;
-use ::{PlanHistory, PlanResult, ActionGroups, KnownHistoryState, KnownProjectState, ProjectUpdate,
-PlanningLogic, GestureID, Gesture, Plan, KnownPlanResultState};
+use crate::{
+    ActionGroups, Gesture, GestureID, KnownHistoryState, KnownPlanResultState,
+    KnownProjectState, Plan, PlanHistory, PlanResult, PlanningLogic, ProjectUpdate,
+};
 use super::{PlanManager, PlanManagerID, ProjectID};
 use super::ui::PlanningUIID;
 use cb_util::log::error;

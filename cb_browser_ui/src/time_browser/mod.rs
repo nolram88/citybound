@@ -2,8 +2,8 @@ use kay::{World, ActorSystem, Actor, TypedID};
 use stdweb::serde::Serde;
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 use stdweb::js_export;
-use SYSTEM;
-use browser_utils::{FrameListener, FrameListenerID};
+use crate::SYSTEM;
+use crate::browser_utils::{FrameListener, FrameListenerID};
 
 use cb_time::actors::TimeID;
 use cb_time::actors::ui::{TimeUI, TimeUIID};

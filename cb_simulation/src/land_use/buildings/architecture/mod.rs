@@ -5,9 +5,6 @@ use cb_util::random::{Rng, seed};
 use cb_util::config_manager::Name;
 use michelangelo::{Vertex, Mesh, Instance, Surface, FlatSurface, Sculpture};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
-use std::iter::FromIterator;
 
 pub mod materials_and_props;
 use self::materials_and_props::{BuildingMaterial, BuildingProp};
@@ -100,7 +97,7 @@ pub fn build_building(
     lot: &Lot,
     building_style: BuildingStyle,
     architecture_rules: &CHashMap<Name, ArchitectureRule>,
-    household_ids: &[::economy::households::HouseholdID],
+    household_ids: &[crate::economy::households::HouseholdID],
     world: &mut World,
 ) -> Result<BuildingGeometry, String> {
     // TODO keep original building if lot changes
@@ -192,7 +189,7 @@ pub fn build_building(
             }
         }
         BuildingStyle::Field => {
-            use economy::households::household_kinds::*;
+            use crate::economy::households::household_kinds::*;
 
             let material = if let Some(farm) = household_ids.get(0) {
                 let farm_type_id = farm.as_raw().type_id;

@@ -1,7 +1,7 @@
 use kay::World;
 use compact::CVec;
 use super::buildings::{BuildingID, BuildingStyle};
-use economy::households::HouseholdID;
+use crate::economy::households::HouseholdID;
 use super::zone_planning::Lot;
 
 pub trait LandUseUI {

@@ -2,20 +2,20 @@ use kay::{ActorSystem, World, Actor, Fate, TypedID};
 use compact::{CVec, COption};
 use descartes::P2;
 
-use transport::lane::LaneID;
+use crate::transport::lane::LaneID;
 use cb_time::actors::TimeID;
 use cb_time::units::Ticks;
 use cb_planning::Prototype;
 use cb_planning::construction::{Constructable, ConstructableID};
-use planning::{CBConstructionID, CBPrototypeKind};
+use crate::planning::{CBConstructionID, CBPrototypeKind};
 
 pub mod rendering;
 pub mod architecture;
 
-use economy::households::HouseholdID;
-use transport::pathfinding::PreciseLocation;
-use economy::immigration_and_development::ImmigrationManagerID;
-use land_use::zone_planning::{Lot, LandUse};
+use crate::economy::households::HouseholdID;
+use crate::transport::pathfinding::PreciseLocation;
+use crate::economy::immigration_and_development::ImmigrationManagerID;
+use crate::land_use::zone_planning::{Lot, LandUse};
 use super::ui::{LandUseUIID};
 
 use cb_util::log::debug;
@@ -204,7 +204,7 @@ impl Constructable<CBPrototypeKind> for Building {
     }
 }
 
-use transport::pathfinding::{Location, Attachee, AttacheeID};
+use crate::transport::pathfinding::{Location, Attachee, AttacheeID};
 use cb_time::actors::{Sleeper, SleeperID};
 use cb_time::units::Duration;
 
@@ -281,7 +281,7 @@ impl Building {
     }
 }
 
-use transport::pathfinding::{RoughLocation, RoughLocationID, RoughLocationResolve};
+use crate::transport::pathfinding::{RoughLocation, RoughLocationID, RoughLocationResolve};
 use cb_time::units::Instant;
 
 impl RoughLocation for Building {

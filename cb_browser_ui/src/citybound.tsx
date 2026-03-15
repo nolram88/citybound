@@ -54,31 +54,46 @@ import * as Utils from './browser_utils/Utils';
 import Stage from './stage/Stage';
 import colors from './colors';
 
-declare module '../target/wasm32-unknown-unknown/release/cb_browser_ui' {
-    type Gesture = { intent: Intent };
-    type Intent = { Road?: { path: EditArcLinePath }, Zone?: { boundary: EditArcLinePath } };
-    type EditArcLinePath = { corners: { position: [number, number] }[] };
+type Gesture = { intent: Intent };
+type Intent = { Road?: { path: EditArcLinePath }, Zone?: { boundary: EditArcLinePath } };
+type EditArcLinePath = { corners: { position: [number, number] }[] };
 
-    export default interface CBRustAPI {
-        start(): void;
+interface CBRustAPI {
+    start(): void;
 
-        set_intent(projectId: string, gestureId: string, intent: Intent, doneAdding: boolean);
+    set_intent(projectId: string, gestureId: string, intent: Intent, doneAdding: boolean): void;
 
-        move_gesture_point(projectId: string, gestureId: string, pointIdx: number, position: [number, number], doneMoving: boolean): void;
-        start_new_gesture(projectId: string, gestureId: string, intent: Intent): void;
-        with_control_point_added(intent: Intent, point: [number, number], addToEnd: boolean): Intent;
-        insert_control_point(projectId: string, gestureId: string, point: [number, number], doneInserting: boolean);
-        split_gesture(projectId: string, gestureId: string, point: [number, number], doneSplitting: boolean);
-        set_n_lanes(projectId: string, gestureId: string, nLanesForward: number, nLanesBackward: number, doneChanging: boolean);
-    }
+    move_gesture_point(projectId: string, gestureId: string, pointIdx: number, position: [number, number], doneMoving: boolean): void;
+    start_new_gesture(projectId: string, gestureId: string, intent: Intent): void;
+    with_control_point_added(intent: Intent, point: [number, number], addToEnd: boolean): Intent;
+    insert_control_point(projectId: string, gestureId: string, point: [number, number], doneInserting: boolean): void;
+    split_gesture(projectId: string, gestureId: string, point: [number, number], doneSplitting: boolean): void;
+    set_n_lanes(projectId: string, gestureId: string, nLanesForward: number, nLanesBackward: number, doneChanging: boolean): void;
+
+    get_newest_log_messages(): void;
+    plan_grid(projectId: string, n: number, nLanes: number, spacing: number): void;
+    spawn_cars(triesPerLane: number): void;
+    get_building_info(buildingId: string): void;
+    get_household_info(householdId: string): void;
+    set_sim_speed(newSpeed: number): void;
+    point_in_area(point: [number, number], area: unknown): boolean;
+    point_close_to_path(
+        point: [number, number],
+        path: unknown,
+        maxDistanceRight: number,
+        maxDistanceLeft: number,
+    ): [[number, number], [number, number], [number, number]] | undefined;
 }
 
-type CBRustAPI = import('../target/wasm32-unknown-unknown/release/cb_browser_ui').default;
+interface WasmBindgenGlobal extends CBRustAPI {
+    (input?: string): Promise<unknown>;
+}
 
 declare global {
     interface Window {
         update: typeof update;
         cbRustBrowser: CBRustAPI;
+        cbColors: typeof colors;
         cbversion: string;
         __REACT_DEVTOOLS_GLOBAL_HOOK__?: any;
     }
@@ -118,8 +133,18 @@ export function ToWindowPortal(props: { children: React.ReactNode }) {
 }
 
 window.update = update;
+window.cbColors = colors;
 
-import('../target/wasm32-unknown-unknown/release/cb_browser_ui').then(mod => mod.default as CBRustAPI).then(cbRustBrowser => {
+function loadRustBrowser(): Promise<CBRustAPI> {
+    const importRuntimeModule = Function("path", "return import(path);") as (path: string) => Promise<{
+        default: () => Promise<unknown>;
+    } & CBRustAPI>;
+    return importRuntimeModule('/cb_browser_ui.js').then(wasmModule =>
+        wasmModule.default().then(() => wasmModule)
+    );
+}
+
+loadRustBrowser().then(cbRustBrowser => {
     window.cbRustBrowser = cbRustBrowser;
 
     const settingSpecs = {
@@ -170,7 +195,27 @@ import('../target/wasm32-unknown-unknown/release/cb_browser_ui').then(mod => mod
         onFrame() {
             if (this.state.rendering.enabled) {
                 Camera.onFrame(this.state, this.boundSetState);
-                this.renderer.current.renderFrame();
+
+                const renderer = this.renderer.current as any;
+                if (!renderer) {
+                    return;
+                }
+
+                if (renderer.state && renderer.state.glError) {
+                    this.boundSetState(oldState => update(oldState, {
+                        rendering: { enabled: { "$set": false } }
+                    }));
+                    return;
+                }
+
+                try {
+                    renderer.renderFrame();
+                } catch (error) {
+                    console.error(error);
+                    this.boundSetState(oldState => update(oldState, {
+                        rendering: { enabled: { "$set": false } }
+                    }));
+                }
             }
         }
 

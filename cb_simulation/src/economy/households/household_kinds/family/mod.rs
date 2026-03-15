@@ -3,17 +3,17 @@ use cb_util::random::{seed, Rng};
 
 use cb_time::actors::{Temporal, TemporalID, TimeID};
 use cb_time::units::{TimeOfDay, TimeOfDayRange, Instant, Duration, Ticks};
-use economy::resources::Resource;
-use economy::resources::Resource::*;
-use economy::market::{Deal, EvaluationRequester, EvaluationRequesterID, EvaluatedSearchResult};
-use land_use::buildings::BuildingID;
-use transport::pathfinding::trip::{TripResult, TripListenerID};
-use transport::pathfinding::RoughLocationID;
+use crate::economy::resources::Resource;
+use crate::economy::resources::Resource::*;
+use crate::economy::market::{Deal, EvaluationRequester, EvaluationRequesterID, EvaluatedSearchResult};
+use crate::land_use::buildings::BuildingID;
+use crate::transport::pathfinding::trip::{TripResult, TripListenerID};
+use crate::transport::pathfinding::RoughLocationID;
 
 pub mod names;
 use self::names::{family_name, member_name};
 
-use economy::households::{Household, HouseholdID, HouseholdCore,
+use crate::economy::households::{Household, HouseholdID, HouseholdCore,
 MemberIdx, Offer, OfferID, OfferIdx};
 
 #[derive(Compact, Clone)]
@@ -68,7 +68,7 @@ impl Sleeper for Family {
     }
 }
 
-use economy::households::ResultAspect;
+use crate::economy::households::ResultAspect;
 
 impl EvaluationRequester for Family {
     fn expect_n_results(&mut self, resource: Resource, n: u32, world: &mut World) {
@@ -89,7 +89,7 @@ impl EvaluationRequester for Family {
     }
 }
 
-use transport::pathfinding::trip::{TripListener, TripID};
+use crate::transport::pathfinding::trip::{TripListener, TripID};
 
 impl TripListener for Family {
     fn trip_created(&mut self, trip: TripID, world: &mut World) {
@@ -225,7 +225,7 @@ impl Temporal for Family {
     }
 }
 
-use transport::pathfinding::{RoughLocation, RoughLocationResolve};
+use crate::transport::pathfinding::{RoughLocation, RoughLocationResolve};
 
 impl RoughLocation for Family {
     fn resolve(&self) -> RoughLocationResolve {

@@ -1,14 +1,14 @@
 use kay::{ActorSystem, World, Actor};
 use cb_time::actors::{Temporal, TemporalID, TimeID};
 use cb_time::units::{TimeOfDay, TimeOfDayRange, Duration, Instant, Ticks};
-use economy::resources::Resource;
-use economy::resources::Resource::*;
-use economy::market::{Deal, EvaluationRequester, EvaluationRequesterID, EvaluatedSearchResult};
-use land_use::buildings::BuildingID;
-use transport::pathfinding::RoughLocationID;
-use transport::pathfinding::trip::{TripListener, TripListenerID, TripID, TripResult};
+use crate::economy::resources::Resource;
+use crate::economy::resources::Resource::*;
+use crate::economy::market::{Deal, EvaluationRequester, EvaluationRequesterID, EvaluatedSearchResult};
+use crate::land_use::buildings::BuildingID;
+use crate::transport::pathfinding::RoughLocationID;
+use crate::transport::pathfinding::trip::{TripListener, TripListenerID, TripID, TripResult};
 
-use economy::households::{Household, HouseholdID, HouseholdCore, MemberIdx, Offer};
+use crate::economy::households::{Household, HouseholdID, HouseholdCore, MemberIdx, Offer};
 
 #[derive(Compact, Clone)]
 pub struct NeighboringTownTrade {
@@ -252,7 +252,7 @@ impl Sleeper for NeighboringTownTrade {
     }
 }
 
-use economy::households::ResultAspect;
+use crate::economy::households::ResultAspect;
 
 impl EvaluationRequester for NeighboringTownTrade {
     fn expect_n_results(&mut self, resource: Resource, n: u32, world: &mut World) {
@@ -296,7 +296,7 @@ impl Temporal for NeighboringTownTrade {
     }
 }
 
-use transport::pathfinding::{RoughLocation, RoughLocationResolve};
+use crate::transport::pathfinding::{RoughLocation, RoughLocationResolve};
 
 impl RoughLocation for NeighboringTownTrade {
     fn resolve(&self) -> RoughLocationResolve {

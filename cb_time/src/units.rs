@@ -243,3 +243,136 @@ impl TimeOfDayRange {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn approx_eq(a: f32, b: f32) {
+        assert!((a - b).abs() < 1e-6, "expected {} ~= {}", a, b);
+    }
+
+    #[test]
+    fn duration_construction_and_units() {
+        let seconds = Duration::from_seconds(90);
+        let minutes = Duration::from_minutes(2);
+        let hours = Duration::from_hours(1);
+
+        assert_eq!(seconds.0, 90);
+        assert_eq!(minutes.0, 120);
+        assert_eq!(hours.0, 3_600);
+
+        approx_eq(seconds.as_seconds(), 90.0);
+        approx_eq(seconds.as_minutes(), 1.5);
+        approx_eq(hours.as_hours(), 1.0);
+        approx_eq(hours.as_days(), 1.0 / 24.0);
+    }
+
+    #[test]
+    fn duration_arithmetic_and_ticks_conversion() {
+        let mut total = Duration::from_minutes(1);
+        total += Duration::from_seconds(30);
+        assert_eq!(total, Duration::from_seconds(90));
+
+        let sum = Duration::from_seconds(20) + Duration::from_seconds(40);
+        assert_eq!(sum, Duration::from_seconds(60));
+
+        let ticks: Ticks = Duration::from_seconds(2).into();
+        assert_eq!(ticks.0, 2 * TICKS_PER_SIM_SECOND);
+    }
+
+    #[test]
+    fn instant_arithmetic_with_duration_and_ticks() {
+        let mut instant = Instant::new(10);
+        assert_eq!(instant.ticks(), 10);
+        assert_eq!(instant.iticks(), 10);
+
+        instant += Duration::from_seconds(2);
+        assert_eq!(instant.ticks(), 16);
+
+        instant += Ticks(4);
+        assert_eq!(instant.ticks(), 20);
+
+        instant -= Duration::from_seconds(1);
+        assert_eq!(instant.ticks(), 17);
+
+        instant -= Ticks(2);
+        assert_eq!(instant.ticks(), 15);
+
+        let later = Instant::new(100) + Duration::from_seconds(10);
+        assert_eq!(later.ticks(), 130);
+
+        let earlier = later - Duration::from_seconds(5);
+        assert_eq!(earlier.ticks(), 115);
+    }
+
+    #[test]
+    fn time_of_day_round_trip_and_wrapping() {
+        let morning = TimeOfDay::new(8, 45);
+        assert_eq!(morning.hours_minutes(), (8, 45));
+        assert_eq!(format!("{}", morning), "8 : 45");
+        assert_eq!(format!("{:?}", morning), "8 : 45");
+
+        let wrapped_earlier = TimeOfDay::new(1, 15).earlier_by(Duration::from_hours(2));
+        assert_eq!(wrapped_earlier.hours_minutes(), (23, 15));
+
+        let wrapped_later = TimeOfDay::new(23, 50).later_by(Duration::from_minutes(15));
+        assert_eq!(wrapped_later.hours_minutes(), (0, 5));
+    }
+
+    #[test]
+    fn time_of_day_from_instant_and_arithmetic() {
+        let start = TimeOfDay::from(Instant::new(0));
+        assert_eq!(start.hours_minutes(), (7, 0));
+
+        let one_sim_hour = Instant::new((TICKS_PER_SIM_MINUTE as usize) * 60);
+        let hour_later = TimeOfDay::from(one_sim_hour);
+        assert_eq!(hour_later.hours_minutes(), (8, 0));
+
+        let mut time = TimeOfDay::new(10, 0);
+        time += Duration::from_minutes(30);
+        assert_eq!(time.hours_minutes(), (10, 30));
+
+        time -= Duration::from_minutes(15);
+        assert_eq!(time.hours_minutes(), (10, 15));
+
+        let added = TimeOfDay::new(12, 0) + Duration::from_minutes(45);
+        assert_eq!(added.hours_minutes(), (12, 45));
+
+        let subtracted = added - Duration::from_minutes(30);
+        assert_eq!(subtracted.hours_minutes(), (12, 15));
+    }
+
+    #[test]
+    fn time_of_day_range_contains_and_end_logic() {
+        let day_shift = TimeOfDayRange::new(9, 0, 17, 0);
+        assert!(day_shift.contains(TimeOfDay::new(9, 0)));
+        assert!(day_shift.contains(TimeOfDay::new(12, 0)));
+        assert!(day_shift.contains(TimeOfDay::new(17, 0)));
+        assert!(!day_shift.contains(TimeOfDay::new(8, 59)));
+        assert!(!day_shift.contains(TimeOfDay::new(17, 1)));
+        assert!(day_shift.end_after_on_same_day(TimeOfDay::new(16, 59)));
+        assert!(!day_shift.end_after_on_same_day(TimeOfDay::new(17, 1)));
+
+        let night_shift = TimeOfDayRange::new(22, 0, 2, 0);
+        assert!(night_shift.contains(TimeOfDay::new(23, 30)));
+        assert!(night_shift.contains(TimeOfDay::new(1, 30)));
+        assert!(!night_shift.contains(TimeOfDay::new(12, 0)));
+        assert!(night_shift.end_after_on_same_day(TimeOfDay::new(23, 0)));
+        assert!(night_shift.end_after_on_same_day(TimeOfDay::new(1, 0)));
+        assert!(!night_shift.end_after_on_same_day(TimeOfDay::new(12, 0)));
+    }
+
+    #[test]
+    fn time_of_day_range_shifts() {
+        let original = TimeOfDayRange::new(10, 0, 12, 0);
+
+        let earlier = original.earlier_by(Duration::from_minutes(30));
+        assert_eq!(earlier.start.hours_minutes(), (9, 30));
+        assert_eq!(earlier.end.hours_minutes(), (11, 30));
+
+        let later = original.later_by(Duration::from_minutes(45));
+        assert_eq!(later.start.hours_minutes(), (10, 45));
+        assert_eq!(later.end.hours_minutes(), (12, 45));
+    }
+}

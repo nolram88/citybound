@@ -1,9 +1,12 @@
 extern crate rouille;
 use self::rouille::{Response, extension_to_mime};
 use crate::init;
+#[cfg(feature = "embed_assets")]
+use rust_embed_flag::RustEmbed;
 
 const MISSING_UI_HTML: &str = "<html><body><h1>Citybound server is running</h1><p>Browser UI bundle missing. Run `npm run build-browser` to build `cb_browser_ui/dist`.</p></body></html>";
 
+#[cfg_attr(feature = "embed_assets", allow(dead_code))]
 fn sanitize_asset_path(path: &str) -> Option<&str> {
     let sanitized = path.trim_start_matches('/');
     if sanitized.contains("..") || sanitized.is_empty() {
@@ -19,7 +22,7 @@ struct EmbeddedAsset;
 
 #[cfg(feature = "embed_assets")]
 fn load_asset(path: &str) -> Option<Vec<u8>> {
-    EmbeddedAsset::get(path).map(|asset| asset.as_ref().to_vec())
+    EmbeddedAsset::get(path)
 }
 
 #[cfg(not(feature = "embed_assets"))]

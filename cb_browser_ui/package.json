@@ -10,7 +10,7 @@
     "antd": "^3.19.2",
     "gl-matrix": "^2.6.1",
     "immutability-helper": "^2.7.1",
-    "monet": "https://codeload.github.com/aeickhoff/monet/tar.gz/5b79f29034c239961f2c93310ddc78ed868865fe",
+    "monet": "file:vendor/monet",
     "mousetrap": "^1.6.2",
     "msgpack-lite": "^0.1.26",
     "react": "^16.8.6",

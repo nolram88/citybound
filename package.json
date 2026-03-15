@@ -3,7 +3,7 @@
         "ensure-tooling": "node repo_scripts/tooling.js",
         "ensure-tooling-server": "node repo_scripts/tooling.js --server",
         "ensure-tooling-browser": "node repo_scripts/tooling.js --browser",
-        "build-browser": "npm run ensure-tooling-browser -- -q && npm --loglevel notice --prefix cb_browser_ui install && npm --loglevel notice --prefix cb_browser_ui run build",
+        "build-browser": "npm run ensure-tooling-browser -- -q && npm --loglevel notice --prefix cb_browser_ui ci && npm --loglevel notice --prefix cb_browser_ui run build",
         "watch-browser": "npm run ensure-tooling-browser -- -q && npm --loglevel notice --prefix cb_browser_ui install && npm --loglevel notice --prefix cb_browser_ui start",
         "build-server": "git describe > .version && npm run ensure-tooling-server -- -q && cargo +nightly build --release",
         "build-server-debug": "git describe > .version && npm run ensure-tooling-server -- -q && cargo +nightly build",
